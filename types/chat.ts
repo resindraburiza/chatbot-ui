@@ -9,7 +9,6 @@ export interface Content{
   type: string;
   text?: string;
   image_url?: ImageUrl;
-  // test
 }
 
 export interface ImageUrl{
