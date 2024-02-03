@@ -345,9 +345,11 @@ export const ChatInput = ({
                         textareaRef.current.focus();
                       }
                     }}
-                  />
-                </div>
+                />
+              </div>
             )}
+            onPlugin(plugin);
+            setShowPluginSelect(false);
             <input
               ref={imageInputRef}
               type="file"
