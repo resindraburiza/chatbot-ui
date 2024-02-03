@@ -19,7 +19,7 @@ import {
 
 import { useTranslation } from 'next-i18next';
 
-import { Message } from '@/types/chat';
+import { Content, Message } from '@/types/chat';
 import { Plugin } from '@/types/plugin';
 import { Prompt } from '@/types/prompt';
 
@@ -67,31 +67,31 @@ export const ChatInput = ({
   const imageInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleImageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
+    const file = e.target.files?.[0];
 
-      if (file) {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const base64Image = reader.result;
-          setImages((prevImages) => [...prevImages, base64Image as string]);
-        };
-        reader.readAsDataURL(file);
-      }
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64Image = reader.result;
+        setImages((prevImages) => [...prevImages, base64Image as string]);
+      };
+      reader.readAsDataURL(file);
+    }
   };
-  
+
   const ImagePreview = ({ images }: { images: string[] }) => {
     return (
       <div className="flex flex-wrap gap-2 mb-2">
         {images.map((image, index) => (
           <img
             key={index}
-            src={img}
+            src={image}
             alt={`uploaded-${index}`}
             className="w-20 h-20 object-cover rounded-md border"
           />
         ))}
       </div>
-    )
+    );
   };
 
   const handleImageInputClick = () => {
@@ -132,9 +132,9 @@ export const ChatInput = ({
       return;
     }
 
-    var messageContent:any[] = [{"type": "text", "text": content}];
+    var messageContent:Content[] = [{"type": "text", "text": content}];
     if(images && images.length >0){
-      var imageMessages = images.map(image => { return {"type": "image_url", "image_url":{"url": image}}});
+      var imageMessages = images.map(image => { return {type: "image_url", image_url:{"url": image}}});
       messageContent = [...messageContent, ...imageMessages]
     }
 
@@ -275,9 +275,8 @@ export const ChatInput = ({
     if (textareaRef && textareaRef.current) {
       textareaRef.current.style.height = 'inherit';
       textareaRef.current.style.height = `${textareaRef.current?.scrollHeight}px`;
-      textareaRef.current.style.overflow = `${
-        textareaRef?.current?.scrollHeight > 400 ? 'auto' : 'hidden'
-      }`;
+      textareaRef.current.style.overflow = `${textareaRef?.current?.scrollHeight > 400 ? 'auto' : 'hidden'
+        }`;
     }
   }, [content]);
 
@@ -324,12 +323,14 @@ export const ChatInput = ({
         <div className="relative mx-2 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-4">
           <ImagePreview images={images} />
 
+
+
           <div className="relative mx-0 flex w-full flex-grow flex-col rounded-md border border-black/10 bg-white shadow-[0_0_10px_rgba(0,0,0,0.10)] dark:border-gray-900/50 dark:bg-[#40414F] dark:text-white dark:shadow-[0_0_15px_rgba(0,0,0,0.10)] sm:mx-0">
             <button
               className="absolute left-2 top-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
               onClick={() => setShowPluginSelect(!showPluginSelect)}
               onKeyDown={(e) => { }}
-              >
+            >
               {plugin ? <IconBrandGoogle size={20} /> : <IconBolt size={20} />}
             </button>
 
@@ -341,15 +342,20 @@ export const ChatInput = ({
                     if (e.key === 'Escape') {
                       e.preventDefault();
                       setShowPluginSelect(false);
-                      if (textareaRef && textareaRef.current) {
-                        textareaRef.current.focus();
-                      }
-                    }}
+                      textareaRef.current?.focus();
+                    }
+                  }}
+                  onPluginChange={(plugin: Plugin) => {
+                    setPlugin(plugin);
+                    setShowPluginSelect(false);
+
+                    if (textareaRef && textareaRef.current) {
+                      textareaRef.current.focus();
+                    }
+                  }}
                 />
               </div>
             )}
-            onPlugin(plugin);
-            setShowPluginSelect(false);
             <input
               ref={imageInputRef}
               type="file"
@@ -387,7 +393,6 @@ export const ChatInput = ({
               onChange={handleChange}
               onKeyDown={handleKeyDown}
             />
-
 
             <button
               className="absolute right-2 top-2 rounded-sm p-1 text-neutral-800 opacity-60 hover:bg-neutral-200 hover:text-neutral-900 dark:bg-opacity-50 dark:text-neutral-100 dark:hover:text-neutral-200"
